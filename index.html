@@ -204,8 +204,8 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
     const CAFE_WHATSAPP = '918082666242'; // Change to your real number
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let cart = [];
+   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+ let cart = [];
 
     async function fetchMenu() {
         const { data, error } = await supabase.from('menu_item').select('*');
