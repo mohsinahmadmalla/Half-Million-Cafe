@@ -3,124 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Half Million Cafe | Premium Edition</title>
+    <title>Half Million Cafe | Premium Lounge</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --dark: #0a0a0a; --gray: #1a1a1a; }
-        body { background: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        .header { text-align: center; padding: 40px 0; border-bottom: 1px solid #333; }
-        .gold-text { color: var(--gold); }
-        
-        /* Menu Grid */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .card { background: var(--gray); padding: 15px; border-radius: 12px; border: 1px solid #333; text-align: center; }
-        .price { color: var(--gold); font-weight: bold; font-size: 1.2rem; }
-        
-        /* Buttons */
-        .btn { background: var(--gold); color: black; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        .category-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .cat-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; }
-        
-        /* Forms */
-        .section { margin-top: 50px; background: var(--gray); padding: 25px; border-radius: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+        :root {
+            --gold: #c5a059;
+            --dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #1a1a1a, var(--dark));
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .tab-btn {
+            background: var(--glass);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--gold);
+            color: black;
+            font-weight: 600;
+        }
+
+        #menu-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-card {
+            background: var(--glass);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+        }
+
+        .menu-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .menu-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+
+        .menu-price {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .add-btn {
+            background: none;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .add-btn:hover {
+            background: var(--gold);
+            color: black;
+        }
+
+        .section-title {
+            text-align: center;
+            color: var(--gold);
+            margin-top: 60px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: var(--glass);
+            border-radius: 20px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background: var(--gold);
+            color: black;
+            font-weight: 700;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1 class="gold-text">HALF MILLION CAFE</h1>
-        <p>Order Delivery or Book a Table</p>
-    </div>
+<header>
+    <h1>Half Million</h1>
+    <p class="tagline">PREMIUM COFFEE EXPERIENCE</p>
+</header>
 
-    <div class="category-btns">
-        <button class="cat-btn" onclick="fetchMenu('coffee')">☕ Coffee</button>
-        <button class="cat-btn" onclick="fetchMenu('food')">🥐 Food</button>
-    </div>
-    <div id="menu-container" class="grid">
-        <p style="text-align:center; grid-column: 1/-1;">Loading menu...</p>
-    </div>
-
-    <div class="section" id="order">
-        <h2 class="gold-text">🛍️ Fast Delivery</h2>
-        <p>Items will be sent via WhatsApp to the Cafe</p>
-        <input type="text" id="order-name" placeholder="Your Name">
-        <textarea id="order-address" placeholder="Delivery Address"></textarea>
-        <select id="payment-method">
-            <option value="Cash on Delivery">Cash on Delivery</option>
-            <option value="Online Payment (Send Link)">Pay Online (Send me a link)</option>
-        </select>
-        <input type="text" id="order-items" placeholder="What would you like to eat?">
-        <button class="btn" onclick="sendOrder()">PLACE ORDER NOW</button>
-    </div>
-
-    <div class="section" id="booking">
-        <h2 class="gold-text">📅 Table Reservation</h2>
-        <input type="text" id="book-name" placeholder="Name">
-        <input type="datetime-local" id="book-time">
-        <input type="number" id="book-guests" placeholder="How many guests?">
-        <button class="btn" style="background: white;" onclick="saveBooking()">RESERVE TABLE</button>
-    </div>
+<div class="tabs">
+    <button class="tab-btn active" onclick="filterMenu('coffee')">Coffee</button>
+    <button class="tab-btn" onclick="filterMenu('food')">Fine Food</button>
 </div>
 
+<div id="menu-container">Loading the experience...</div>
+
+<h2 class="section-title">Delivery Order</h2>
+<form id="orderForm">
+    <input type="text" id="custName" placeholder="Your Name" required>
+    <input type="text" id="custAddress" placeholder="Delivery Address" required>
+    <select id="paymentMethod">
+        <option value="Cash on Delivery">Cash on Delivery</option>
+        <option value="Online Payment">Online Payment</option>
+    </select>
+    <button type="submit" class="submit-btn">Place Order via WhatsApp</button>
+</form>
+
+<h2 class="section-title">Table Reservation</h2>
+<form id="resForm">
+    <input type="text" id="resName" placeholder="Full Name" required>
+    <input type="datetime-local" id="resTime" required>
+    <input type="number" id="resGuests" placeholder="Number of Guests" required>
+    <button type="submit" class="submit-btn">Confirm Reservation</button>
+</form>
+
 <script>
-    // 1. SETTINGS (Replace these!)
+    // PASTE YOUR REAL KEYS HERE
     const SUPABASE_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
-    const CAFE_WHATSAPP = '919876543210'; // Change to the Client's WhatsApp number (with country code)
+    const CAFE_WHATSAPP = '917006XXXXXX'; // Change to your real number
 
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let cart = [];
 
-    // 2. FETCH MENU
-    async function fetchMenu(cat) {
+    async function fetchMenu() {
+        const { data, error } = await supabase.from('menu_item').select('*');
+        if (error) console.error(error);
+        else renderMenu(data, 'coffee');
+    }
+
+    function renderMenu(items, category) {
         const container = document.getElementById('menu-container');
-        const { data, error } = await sb.from('menu_item').select('*').eq('category', cat);
+        container.innerHTML = '';
         
-        if (error) { container.innerHTML = "Error loading items."; return; }
+        const filtered = items.filter(i => i.category === category);
         
-        container.innerHTML = data.map(item => `
-            <div class="card">
-                <div style="font-size: 2rem;">${item.emoji}</div>
-                <h3>${item.name}</h3>
-                <p class="price">₹${item.price}</p>
-                <button class="cat-btn" style="font-size: 0.8rem;" onclick="addToOrder('${item.name}')">+ Add</button>
-            </div>
-        `).join('');
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'menu-card';
+            // Default image if none is provided
+            const img = item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=500';
+            
+            card.innerHTML = `
+                <img src="${img}" class="menu-img">
+                <div class="menu-info">
+                    <p class="menu-name">${item.name}</p>
+                    <p class="menu-price">₹${item.price}</p>
+                    <button class="add-btn" onclick="addToCart('${item.name}')">+ Add to Order</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
     }
 
-    function addToOrder(name) {
-        document.getElementById('order-items').value += name + ", ";
+    function addToCart(name) {
+        cart.push(name);
+        alert(name + " added!");
     }
 
-    // 3. WHATSAPP ORDERING (The "Money" Part)
-    function sendOrder() {
-        const name = document.getElementById('order-name').value;
-        const addr = document.getElementById('order-address').value;
-        const pay = document.getElementById('payment-method').value;
-        const items = document.getElementById('order-items').value;
+    document.getElementById('orderForm').onsubmit = (e) => {
+        e.preventDefault();
+        if(cart.length === 0) return alert("Add items first!");
+        const msg = `Order for ${document.getElementById('custName').value}: ${cart.join(', ')}. Address: ${document.getElementById('custAddress').value}`;
+        window.open(`https://wa.me/${CAFE_WHATSAPP}?text=${encodeURIComponent(msg)}`);
+    };
 
-        if(!name || !items) { alert("Please fill name and items"); return; }
+    document.getElementById('resForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const { error } = await supabase.from('reservation').insert([{
+            name: document.getElementById('resName').value,
+            date_time: document.getElementById('resTime').value,
+            guests: document.getElementById('resGuests').value
+        }]);
+        if (error) alert("Error: " + error.message);
+        else alert("Reservation confirmed!");
+    };
 
-        const message = `*NEW ORDER FROM WEBSITE*%0A-------------------%0A*Name:* ${name}%0A*Items:* ${items}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
-        window.open(`https://wa.me/${CAFE_WHATSAPP}?text=${message}`, '_blank');
+    function filterMenu(cat) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        fetchMenu().then(data => fetchMenu()); // Refresh
     }
 
-    // 4. RESERVATIONS
-    async function saveBooking() {
-        const name = document.getElementById('book-name').value;
-        const time = document.getElementById('book-time').value;
-        const guests = document.getElementById('book-guests').value;
-
-        const { error } = await sb.from('reservation').insert([{ name, date_time: time, guests }]);
-
-        if (error) { alert("Error: " + error.message); }
-        else { alert("Table Reserved! We will see you then."); }
-    }
-
-    // Initial Load
-    fetchMenu('coffee');
+    fetchMenu();
 </script>
 
 </body>
