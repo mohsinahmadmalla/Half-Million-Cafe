@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src https://*.supabase.co; img-src 'self' https://* data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+    
     <title>Half Million | Signature Lounge</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
@@ -122,7 +124,7 @@
             <form id="resForm">
                 <input type="text" id="resName" placeholder="Reservation Name" required>
                 <input type="datetime-local" id="resTime" required>
-                <input type="number" id="resGuests" placeholder="Number of Guests" required>
+                <input type="number" id="resGuests" placeholder="Number of Guests" min="1" max="20" required>
                 <button type="submit" class="btn-gold">Request Table</button>
             </form>
         </div>
@@ -145,8 +147,7 @@
                 <button type="submit" class="btn-gold">Submit Review</button>
             </form>
         </div>
-        <div id="review-display-grid">
-            </div>
+        <div id="review-display-grid"></div>
     </div>
 </section>
 
@@ -164,21 +165,27 @@
     let masterItems = [];
     let cart = [];
 
-    // --- FETCH DATA ---
+    // SECURITY: Sanitize function to strip dangerous HTML tags
+    function sanitize(text) {
+        const temp = document.createElement('div');
+        temp.textContent = text;
+        return temp.innerHTML;
+    }
+
     async function init() {
-        const { data: menu } = await _sb.from('menu_item').select('*');
+        const { data: menu, error } = await _sb.from('menu_item').select('*');
         if (menu) { masterItems = menu; renderMenu('coffee'); }
+        if (error) console.error("Data fetch blocked by RLS or Network Error");
         fetchReviews();
     }
 
-    // --- MENU LOGIC ---
     function renderMenu(cat) {
         const grid = document.getElementById('menu-grid');
         grid.innerHTML = '';
         masterItems.filter(i => i.category === cat).forEach(item => {
             grid.innerHTML += `
                 <div class="card">
-                    <img src="${item.image_url}" class="card-img">
+                    <img src="${item.image_url}" class="card-img" alt="${item.name}">
                     <div class="card-info">
                         <h3>${item.name}</h3>
                         <p class="price">₹${item.price}</p>
@@ -194,19 +201,39 @@
         alert("Added " + name);
     }
 
-    // --- ORDER & PAYMENT ---
     document.getElementById('orderForm').onsubmit = (e) => {
         e.preventDefault();
         if(cart.length === 0) return alert("Your cart is empty!");
-        const method = document.getElementById('payMethod').value;
-        const name = document.getElementById('custName').value;
-        const addr = document.getElementById('custAddress').value;
+        
+        const method = sanitize(document.getElementById('payMethod').value);
+        const name = sanitize(document.getElementById('custName').value);
+        const addr = sanitize(document.getElementById('custAddress').value);
         
         const text = `*NEW ORDER FROM WEBSITE*%0A%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${method}`;
         window.open(`https://wa.me/${PHONE}?text=${text}`);
     };
 
-    // --- REVIEW LOGIC ---
+    document.getElementById('resForm').onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const resData = {
+            name: sanitize(document.getElementById('resName').value),
+            date_time: document.getElementById('resTime').value,
+            guests: parseInt(document.getElementById('resGuests').value)
+        };
+
+        // Security check for guest count
+        if(resData.guests < 1 || resData.guests > 20) return alert("Guest count must be between 1 and 20.");
+
+        const { error } = await _sb.from('reservation').insert([resData]);
+        if (!error) {
+            alert("Table reserved successfully!");
+            document.getElementById('resForm').reset();
+        } else {
+            alert("Action denied. Please contact support.");
+        }
+    };
+
     async function fetchReviews() {
         const { data: reviews } = await _sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(3);
         const display = document.getElementById('review-display-grid');
@@ -216,8 +243,8 @@
                 display.innerHTML += `
                     <div class="review-card">
                         <div class="stars">${"⭐".repeat(r.rating)}</div>
-                        <p>"${r.content}"</p>
-                        <br><strong>- ${r.name}</strong>
+                        <p>"${sanitize(r.content)}"</p>
+                        <br><strong>- ${sanitize(r.name)}</strong>
                     </div>`;
             });
         }
@@ -226,15 +253,17 @@
     document.getElementById('addReviewForm').onsubmit = async (e) => {
         e.preventDefault();
         const reviewData = {
-            name: document.getElementById('revName').value,
+            name: sanitize(document.getElementById('revName').value),
             rating: parseInt(document.getElementById('revRating').value),
-            content: document.getElementById('revContent').value
+            content: sanitize(document.getElementById('revContent').value)
         };
         const { error } = await _sb.from('reviews').insert([reviewData]);
         if (!error) {
             alert("Thank you for your feedback!");
             document.getElementById('addReviewForm').reset();
             fetchReviews();
+        } else {
+            alert("Submission failed. Database RLS might be blocking this action.");
         }
     };
 
