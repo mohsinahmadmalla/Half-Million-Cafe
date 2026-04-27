@@ -159,130 +159,39 @@
 <script>
     const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
-    const PHONE = '918082666242';
-
+    
     const _sb = supabase.createClient(S_URL, S_KEY);
     let masterItems = [];
-    let cart = [];
-
-    function sanitize(text) {
-        const temp = document.createElement('div');
-        temp.textContent = text;
-        return temp.innerHTML;
-    }
 
     async function init() {
-        // FETCH MENU WITH ERROR ALERT
-        const { data: menu, error } = await _sb.from('menu_item').select('*');
-        if (error) {
-            alert("DB ERROR (Menu): " + error.message);
-        } else if (menu) { 
-            masterItems = menu; 
-            renderMenu('coffee'); 
-        }
-        fetchReviews();
-    }
+        try {
+            // Test 1: Can we even talk to the table?
+            const { data, error } = await _sb.from('menu_item').select('*');
+            
+            if (error) {
+                alert("DATABASE REJECTED US: " + error.message);
+                return;
+            }
 
-    function renderMenu(cat) {
-        const grid = document.getElementById('menu-grid');
-        grid.innerHTML = '';
-        const items = masterItems.filter(i => i.category.toLowerCase() === cat.toLowerCase());
-        
-        if(items.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; width:100%">No items found in this category.</p>';
-        }
+            if (!data || data.length === 0) {
+                alert("DATABASE EMPTY: Supabase connected, but it returned 0 rows. Check your table name!");
+                return;
+            }
 
-        items.forEach(item => {
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${item.image_url}" class="card-img" alt="${item.name}">
-                    <div class="card-info">
-                        <h3>${item.name}</h3>
-                        <p class="price">₹${item.price}</p>
-                        <button class="btn-gold" style="padding:8px" onclick="addToCart('${item.name}')">Add to Order</button>
-                    </div>
-                </div>`;
-        });
-    }
-
-    function addToCart(name) {
-        cart.push(name);
-        document.getElementById('cartCount').innerText = cart.length;
-        alert("Added " + name);
-    }
-
-    document.getElementById('orderForm').onsubmit = (e) => {
-        e.preventDefault();
-        if(cart.length === 0) return alert("Your cart is empty!");
-        const method = sanitize(document.getElementById('payMethod').value);
-        const name = sanitize(document.getElementById('custName').value);
-        const addr = sanitize(document.getElementById('custAddress').value);
-        const text = `*NEW ORDER FROM WEBSITE*%0A%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${method}`;
-        window.open(`https://wa.me/${PHONE}?text=${text}`);
-    };
-
-    document.getElementById('resForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const resData = {
-            name: sanitize(document.getElementById('resName').value),
-            date_time: document.getElementById('resTime').value,
-            guests: parseInt(document.getElementById('resGuests').value)
-        };
-        const { error } = await _sb.from('reservation').insert([resData]);
-        if (!error) {
-            alert("Table reserved successfully!");
-            document.getElementById('resForm').reset();
-        } else {
-            alert("Booking Failed: " + error.message);
-        }
-    };
-
-    async function fetchReviews() {
-        const { data: reviews, error } = await _sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(3);
-        if (error) {
-            alert("DB ERROR (Reviews): " + error.message);
-            return;
-        }
-        const display = document.getElementById('review-display-grid');
-        display.innerHTML = '';
-        if(reviews && reviews.length > 0) {
-            reviews.forEach(r => {
-                display.innerHTML += `
-                    <div class="review-card">
-                        <div class="stars">${"⭐".repeat(r.rating)}</div>
-                        <p>"${sanitize(r.content)}"</p>
-                        <br><strong>- ${sanitize(r.name)}</strong>
-                    </div>`;
-            });
-        } else {
-            display.innerHTML = '<p>No reviews yet. Be the first!</p>';
-        }
-    }
-
-    document.getElementById('addReviewForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const reviewData = {
-            name: sanitize(document.getElementById('revName').value),
-            rating: parseInt(document.getElementById('revRating').value),
-            content: sanitize(document.getElementById('revContent').value)
-        };
-        const { error } = await _sb.from('reviews').insert([reviewData]);
-        if (!error) {
-            alert("Thank you for your feedback!");
-            document.getElementById('addReviewForm').reset();
+            // If we got here, data exists!
+            alert("SUCCESS: Found " + data.length + " items in menu_item!");
+            masterItems = data;
+            renderMenu('coffee');
             fetchReviews();
-        } else {
-            alert("Review Failed: " + error.message);
-        }
-    };
 
-    function filterMenu(cat, e) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        renderMenu(cat);
+        } catch (err) {
+            alert("CONNECTION CRASH: " + err.message);
+        }
     }
 
+    // Keep the rest of your functions (renderMenu, fetchReviews, etc.) exactly the same
     init();
 </script>
+    
 </body>
 </html>
