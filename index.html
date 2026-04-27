@@ -5,206 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Half Million | Signature Lounge</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* ATTENTION-GRABBING PREMIUM COLOUR GRADING */
+        /* VIBRANT ATTENTION-GRABBING COLOUR PALETTE */
         :root { 
-            --gold: #FFD700; /* Vivid Electric Gold */
-            --soft-gold: #c5a059;
-            --dark-bg: #050505; /* Pure Pitch Black */
-            --onyx: #111111;
-            --accent: rgba(255, 215, 0, 0.15); /* Golden Glow */
-            --glass: rgba(255, 255, 255, 0.03);
+            --primary-bg: #020617; /* Deep Midnight Blue */
+            --electric-blue: #3b82f6; 
+            --cyan-glow: #06b6d4; 
+            --magenta-accent: #d946ef; 
+            --card-bg: #0f172a;
+            --text-main: #f8fafc;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
-            background: var(--dark-bg); 
-            color: #ffffff; 
+            background: var(--primary-bg); 
+            color: var(--text-main); 
             font-family: 'Montserrat', sans-serif; 
-            /* Gradient adds depth to the black background */
-            background-image: radial-gradient(circle at top right, #1a1608, #050505);
+            /* Multi-color gradient background to attract the eye */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.1) 0px, transparent 50%);
             line-height: 1.6;
-            overflow-x: hidden;
         }
         
-        /* NAVIGATION */
+        /* NAVIGATION - VIBRANT GLOW */
         nav { 
             padding: 20px 8%; 
             display: flex; 
             align-items: center; 
             gap: 20px; 
-            background: rgba(5, 5, 5, 0.9); 
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2); 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            backdrop-filter: blur(10px);
+            background: rgba(2, 6, 23, 0.9); 
+            border-bottom: 2px solid var(--electric-blue);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(12px);
         }
-        .logo-img { height: 50px; border-radius: 8px; box-shadow: 0 0 15px var(--accent); }
+        .logo-img { height: 50px; border-radius: 50%; border: 2px solid var(--cyan-glow); }
         .logo-text { 
-            font-family: 'Playfair Display', serif; 
-            color: var(--gold); 
-            font-size: 1.5rem; 
-            letter-spacing: 5px; 
-            font-weight: 700;
+            font-family: 'Montserrat', sans-serif; font-weight: 800;
+            background: linear-gradient(to right, var(--cyan-glow), var(--magenta-accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 1.6rem; letter-spacing: 2px;
         }
 
-        /* SECTIONS */
         .section { padding: 60px 8%; max-width: 1200px; margin: 0 auto; }
         .section-title { 
-            text-align: center; 
-            font-family: 'Playfair Display', serif; 
-            color: var(--gold); 
-            font-size: 2.8rem; 
-            margin-bottom: 40px;
-            font-style: italic;
+            text-align: center; font-family: 'Playfair Display', serif; 
+            font-size: 3rem; margin-bottom: 40px;
+            text-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
         }
         
-        /* TABS */
+        /* CATEGORY TABS - NEON STYLE */
         .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
         .tab-btn { 
-            background: transparent; 
-            border: 1px solid var(--soft-gold); 
-            color: var(--soft-gold); 
-            padding: 12px 30px; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); 
+            color: white; padding: 12px 30px; cursor: pointer; transition: 0.4s; 
+            font-weight: 600; border-radius: 50px; text-transform: uppercase;
         }
         .tab-btn.active { 
-            background: var(--gold); 
-            color: black; 
-            box-shadow: 0 0 20px var(--accent);
-            border-color: var(--gold);
+            background: var(--electric-blue); border-color: var(--cyan-glow);
+            box-shadow: 0 0 20px var(--electric-blue);
         }
 
-        /* MENU CARDS */
+        /* MENU GRID - VIBRANT CARDS */
         #menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         .card { 
-            background: var(--onyx); 
-            border-radius: 15px; 
-            overflow: hidden; 
-            border: 1px solid rgba(255,215,0,0.05); 
-            transition: 0.4s;
-            position: relative;
+            background: var(--card-bg); border-radius: 20px; overflow: hidden; 
+            border: 1px solid var(--glass-border); transition: 0.4s ease;
         }
         .card:hover { 
-            transform: translateY(-10px); 
-            border-color: var(--gold); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: scale(1.03); border-color: var(--cyan-glow);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3);
         }
-        .card-img { width: 100%; height: 250px; object-fit: cover; transition: 0.5s; }
-        .card:hover .card-img { transform: scale(1.05); }
-        .price { color: var(--gold); font-size: 1.5rem; font-weight: 700; margin: 15px 0; font-family: 'Playfair Display', serif; }
+        .card-img { width: 100%; height: 230px; object-fit: cover; }
+        .price { color: var(--cyan-glow); font-size: 1.6rem; font-weight: 800; margin: 10px 0; }
 
-        /* FORMS */
+        /* FORMS - COLOURFUL INTERACTIVE BOXES */
         .form-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .form-box { 
-            background: linear-gradient(145deg, #111, #080808); 
-            padding: 35px; 
-            border: 1px solid rgba(255,215,0,0.1); 
-            border-radius: 20px; 
-            box-shadow: 10px 10px 20px #000;
+            background: linear-gradient(145deg, #1e293b, #0f172a); 
+            padding: 35px; border-radius: 24px; border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
         input, select, textarea { 
             width: 100%; padding: 15px; margin-bottom: 20px; 
-            background: #000; border: 1px solid #222; 
-            color: #fff; border-radius: 8px;
+            background: rgba(2, 6, 23, 0.5); border: 1px solid var(--glass-border); 
+            color: #fff; border-radius: 12px;
         }
-        input:focus { border-color: var(--gold); outline: none; }
+        input:focus { border-color: var(--magenta-accent); outline: none; }
         .btn-gold { 
-            background: linear-gradient(45deg, #FFD700, #b8860b); 
-            color: #000; border: none; 
-            width: 100%; padding: 18px; font-weight: 700; cursor: pointer; 
-            text-transform: uppercase; border-radius: 8px; letter-spacing: 2px;
-            transition: 0.3s;
+            background: linear-gradient(45deg, var(--electric-blue), var(--cyan-glow)); 
+            color: white; border: none; width: 100%; padding: 18px; font-weight: 700; 
+            cursor: pointer; text-transform: uppercase; border-radius: 12px;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-        .btn-gold:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--accent); }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--cyan-glow); }
         
-        /* REVIEWS */
+        /* REVIEWS - MULTICOLOR LIST */
         .review-card { 
-            background: rgba(255,255,255,0.02); 
-            padding: 25px; 
-            border-right: 4px solid var(--gold); 
-            margin-top: 20px; 
-            border-radius: 15px 0 0 15px;
-            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.03); padding: 20px; 
+            border-left: 4px solid var(--magenta-accent); margin-top: 15px; border-radius: 12px;
         }
-        .review-card:hover { background: rgba(255,255,255,0.05); }
-        .stars { color: var(--gold); margin-bottom: 10px; font-size: 1.1rem; }
-        .review-time { font-size: 0.75rem; color: #666; display: block; margin-top: 12px; font-weight: 600; }
+        .stars { color: #fbbf24; margin-bottom: 8px; }
+        .review-time { font-size: 0.75rem; color: var(--cyan-glow); display: block; margin-top: 10px; font-weight: 600; }
 
-        /* FOOTER */
+        /* FOOTER - CLEAR INFO */
         footer { 
-            padding: 50px 8%; background: #000; border-top: 1px solid var(--accent); 
-            text-align: center; color: #999; font-size: 0.9rem; margin-top: 60px;
+            padding: 60px 8%; background: #010409; border-top: 1px solid var(--glass-border); 
+            text-align: center; color: #94a3b8; margin-top: 60px;
         }
-        .footer-info { color: var(--gold); margin-bottom: 15px; font-weight: 700; letter-spacing: 3px; font-size: 1.2rem; }
+        .footer-info { 
+            color: var(--cyan-glow); margin-bottom: 15px; font-weight: 800; 
+            font-size: 1.4rem; letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
 <nav>
-    <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img" alt="Logo">
+    <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img">
     <span class="logo-text">HALF MILLION</span>
 </nav>
 
 <section class="section">
-    <h2 class="section-title">The Masterpiece Menu</h2>
+    <h2 class="section-title">The Electric Menu</h2>
     <div class="tabs">
-        <button class="tab-btn active" id="btn-coffee" onclick="filterMenu('coffee')">Artisan Coffee</button>
-        <button class="tab-btn" id="btn-food" onclick="filterMenu('fine food')">Gourmet Selection</button>
+        <button class="tab-btn active" id="btn-coffee" onclick="filterMenu('coffee')">Coffee Bar</button>
+        <button class="tab-btn" id="btn-food" onclick="filterMenu('fine food')">Gourmet Food</button>
     </div>
-    <div id="menu-grid">Preparing your selection...</div>
+    <div id="menu-grid">Loading Vibrant Flavours...</div>
 </section>
 
 <section class="section">
     <div class="form-container">
         <div class="form-box">
-            <h3 style="color:var(--gold); margin-bottom:20px; font-family:'Playfair Display'">Secure Ordering</h3>
+            <h3 style="color:var(--cyan-glow); margin-bottom:20px;">Express Order</h3>
             <form id="orderForm">
                 <input type="text" id="custName" placeholder="Full Name" required>
                 <input type="text" id="custAddress" placeholder="Delivery Address" required>
                 <select id="payMethod" required>
-                    <option value="" disabled selected>Payment Method</option>
-                    <option value="UPI / Online">UPI (GPay / PhonePe)</option>
+                    <option value="" disabled selected>Payment Choice</option>
+                    <option value="UPI / Online">UPI (Instant)</option>
                     <option value="Cash on Delivery">Cash on Delivery</option>
                 </select>
-                <p style="margin-bottom:15px; font-size: 0.9rem;">My Cart: <span id="cartCount" style="color:var(--gold); font-weight:bold;">0</span> items</p>
-                <button type="submit" class="btn-gold">Place Order via WhatsApp</button>
+                <p style="margin-bottom:15px; font-weight: 600;">Items: <span id="cartCount" style="color:var(--magenta-accent)">0</span></p>
+                <button type="submit" class="btn-gold">Order via WhatsApp</button>
             </form>
         </div>
 
         <div class="form-box">
-            <h3 style="color:var(--gold); margin-bottom:20px; font-family:'Playfair Display'">Reserve a Table</h3>
+            <h3 style="color:var(--magenta-accent); margin-bottom:20px;">Book a Table</h3>
             <form id="resForm">
                 <input type="text" id="resName" placeholder="Reservation Name" required>
                 <input type="datetime-local" id="resTime" required>
-                <input type="number" id="resGuests" placeholder="Guests" min="1" required>
-                <button type="submit" class="btn-gold" style="background:#222; color:white; border:1px solid #444;">Book Now</button>
+                <input type="number" id="resGuests" placeholder="Number of Guests" min="1" required>
+                <button type="submit" class="btn-gold" style="background:var(--magenta-accent); box-shadow: 0 4px 15px rgba(217, 70, 239, 0.4);">Reserve Now</button>
             </form>
         </div>
     </div>
 </section>
 
 <section class="section">
-    <h2 class="section-title">Client Reflections</h2>
+    <h2 class="section-title">Guest Stories</h2>
     <div class="form-container">
         <div class="form-box">
             <form id="revForm">
                 <input type="text" id="revName" placeholder="Your Name" required>
                 <select id="revStars" required>
-                    <option value="5">⭐⭐⭐⭐⭐ (Exquisite)</option>
-                    <option value="4">⭐⭐⭐⭐ (Great)</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (Incredible)</option>
+                    <option value="4">⭐⭐⭐⭐ (Excellent)</option>
                     <option value="3">⭐⭐⭐ (Good)</option>
                 </select>
-                <textarea id="revText" placeholder="Describe your experience..." rows="3" required></textarea>
-                <button type="submit" class="btn-gold">Share Review</button>
+                <textarea id="revText" placeholder="How was your visit?" rows="3" required></textarea>
+                <button type="submit" class="btn-gold">Post Review</button>
             </form>
         </div>
         <div id="review-display"></div>
@@ -214,9 +189,9 @@
 <footer>
     <p class="footer-info">HALF MILLION | SIGNATURE LOUNGE</p>
     <p>📍 Signature Lounge, Mumbai, India</p>
-    <p>📞 Contact Support: +91 8082666242</p>
-    <p>✉️ Email: info@halfmillionlounge.com</p>
-    <p style="margin-top: 25px; font-size: 0.7rem; opacity: 0.5;">&copy; 2026 Crafted for Excellence.</p>
+    <p>📞 Support: +91 8082666242</p>
+    <p>✉️ Email: hello@halfmillion.com</p>
+    <p style="margin-top: 30px; font-size: 0.7rem; opacity: 0.4;">&copy; 2026 Developed for the Future.</p>
 </footer>
 
 <script>
@@ -242,7 +217,7 @@
                 <div class="card">
                     <img src="${item.image_url}" class="card-img">
                     <div style="padding:20px">
-                        <h3 style="font-family:'Playfair Display'">${item.name}</h3>
+                        <h3 style="font-size:1.2rem;">${item.name}</h3>
                         <p class="price">₹${item.price}</p>
                         <button class="btn-gold" style="padding:10px; font-size:0.7rem;" onclick="addToCart('${item.name}')">Add to Order</button>
                     </div>
@@ -257,11 +232,11 @@
 
     document.getElementById('orderForm').onsubmit = (e) => {
         e.preventDefault();
-        if(!cart.length) return alert("Select your gourmet items first!");
+        if(!cart.length) return alert("Your cart is empty!");
         const name = document.getElementById('custName').value;
         const addr = document.getElementById('custAddress').value;
         const pay = document.getElementById('payMethod').value;
-        const msg = `*NEW LUXURY ORDER*%0A*Client:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
+        const msg = `*NEW ELECTRIC ORDER*%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
         window.open(`https://wa.me/918082666242?text=${msg}`);
     };
 
@@ -272,14 +247,14 @@
             date_time: document.getElementById('resTime').value, 
             guests: document.getElementById('resGuests').value 
         }]);
-        alert(error ? "Submission failed." : "Reservation Request Sent.");
+        alert(error ? "Retry reservation." : "Table Requested Successfully!");
     };
 
     async function fetchReviews() {
         const { data } = await _sb.from('reviews').select('*');
         const div = document.getElementById('review-display');
         if(data) {
-            // NEWEST ON TOP - Still logic fixed
+            // LOGIC FIXED: NEWEST ON TOP
             const sorted = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             div.innerHTML = '';
             sorted.slice(0, 15).forEach(r => {
@@ -290,9 +265,9 @@
                 div.innerHTML += `
                     <div class="review-card">
                         <div class="stars">${"⭐".repeat(r.rating)}</div>
-                        <strong style="color:var(--gold)">${r.name}</strong>
-                        <p style="margin-top:5px; opacity:0.9; font-style:italic;">"${r.content}"</p>
-                        <span class="review-time">${dateStr} • ${timeStr}</span>
+                        <strong style="color:var(--cyan-glow)">${r.name}</strong>
+                        <p style="margin-top:5px; opacity:0.9;">"${r.content}"</p>
+                        <span class="review-time">${dateStr} at ${timeStr}</span>
                     </div>`;
             });
         }
@@ -300,7 +275,7 @@
 
     document.getElementById('revForm').onsubmit = async (e) => {
         e.preventDefault();
-        // DATE FIX - 2026 injection preserved
+        // LOGIC FIXED: 2026 TIMESTAMP
         const { error } = await _sb.from('reviews').insert([{ 
             name: document.getElementById('revName').value, 
             rating: parseInt(document.getElementById('revStars').value), 
