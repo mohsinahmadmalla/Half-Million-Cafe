@@ -3,158 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src https://*.supabase.co; img-src 'self' https://* data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+    <title>Half Million | Secure Lounge</title>
     
-    <title>Half Million | Signature Lounge</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --gold: #c5a059;
-            --dark: #0a0a0a;
-            --card: #151515;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
-
+        :root { --gold: #c5a059; --dark: #0a0a0a; --card: #151515; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: #0a0a0a; 
-            color: white; 
-            font-family: 'Montserrat', sans-serif;
-            background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-        }
-
-        nav {
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 10, 10, 0.95);
-            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
-            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px);
-        }
-        .logo-box { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 50px; width: auto; }
+        body { background: #0a0a0a; color: white; font-family: 'Montserrat', sans-serif; }
+        nav { padding: 20px 5%; background: rgba(10, 10, 10, 0.95); border-bottom: 1px solid rgba(197, 160, 89, 0.2); }
         .logo-text { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.4rem; letter-spacing: 2px; }
-
-        .hero {
-            height: 40vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600');
-            background-size: cover; background-position: center;
-        }
-        .hero h1 { font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--gold); }
-
-        .section { padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
-        .section-title { text-align: center; font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.2rem; margin-bottom: 30px; }
-        
-        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        .tab-btn {
-            background: transparent; border: 1px solid var(--gold); color: var(--gold);
-            padding: 10px 30px; cursor: pointer; transition: 0.3s; font-weight: 600;
-        }
+        .section { padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-family: 'Playfair Display', serif; color: var(--gold); margin-bottom: 20px; }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; cursor: pointer; }
         .tab-btn.active { background: var(--gold); color: black; }
-
-        #menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        .card { background: var(--card); border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .card-img { width: 100%; height: 200px; object-fit: cover; }
-        .card-info { padding: 20px; text-align: center; }
-        .price { color: var(--gold); font-size: 1.2rem; font-weight: 600; margin: 10px 0; }
-
-        .form-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-        .form-box { background: var(--glass); padding: 30px; border: 1px solid rgba(197, 160, 89, 0.2); }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; font-family: inherit; }
-        .btn-gold { background: var(--gold); color: #000; border: none; width: 100%; padding: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-gold:hover { opacity: 0.8; }
-
-        #review-display-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
-        .review-card { background: #111; padding: 20px; border-left: 3px solid var(--gold); }
-        .stars { color: var(--gold); margin-bottom: 10px; }
-
-        footer { background: #050505; padding: 40px 5%; text-align: center; border-top: 1px solid #1a1a1a; }
+        #menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 8px; overflow: hidden; text-align: center; padding-bottom: 15px; }
+        .card-img { width: 100%; height: 180px; object-fit: cover; }
+        .price { color: var(--gold); margin: 10px 0; font-weight: bold; }
+        .form-box { background: #111; padding: 20px; margin-bottom: 20px; border: 1px solid #222; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: #fff; }
+        .btn-gold { background: var(--gold); color: #000; border: none; width: 100%; padding: 12px; font-weight: bold; cursor: pointer; }
+        .review-card { background: #111; padding: 15px; margin-top: 10px; border-left: 3px solid var(--gold); }
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="logo-box">
-        <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img" alt="Logo">
-        <span class="logo-text">HALF MILLION</span>
-    </div>
-</nav>
-
-<section class="hero">
-    <h1>Signature Experience</h1>
-</section>
+<nav><div class="logo-text">HALF MILLION</div></nav>
 
 <section class="section">
-    <h2 class="section-title">Our Menu</h2>
+    <h2 class="section-title">Menu</h2>
     <div class="tabs">
-        <button class="tab-btn active" onclick="filterMenu('coffee', event)">Coffee</button>
-        <button class="tab-btn" onclick="filterMenu('food', event)">Fine Food</button>
+        <button class="tab-btn active" onclick="renderMenu('coffee')">Coffee</button>
+        <button class="tab-btn" onclick="renderMenu('food')">Food</button>
     </div>
-    <div id="menu-grid">Loading...</div>
-</section>
-
-<section class="section" style="background: #080808;">
-    <h2 class="section-title">Order & Reservations</h2>
-    <div class="form-container">
-        <div class="form-box">
-            <h3 style="color:var(--gold); margin-bottom:15px;">Secure Delivery</h3>
-            <form id="orderForm">
-                <input type="text" id="custName" placeholder="Full Name" required>
-                <input type="text" id="custAddress" placeholder="Delivery Address" required>
-                <select id="payMethod" required>
-                    <option value="" disabled selected>Select Payment Method</option>
-                    <option value="UPI / GPay">UPI (GPay/PhonePe)</option>
-                    <option value="Cash on Delivery">Cash on Delivery</option>
-                    <option value="Card on Delivery">Card on Delivery</option>
-                </select>
-                <p style="font-size:0.8rem; margin-bottom:10px;">Cart: <span id="cartCount" style="color:var(--gold)">0</span> items</p>
-                <button type="submit" class="btn-gold">Confirm & Pay via WhatsApp</button>
-            </form>
-        </div>
-
-        <div class="form-box">
-            <h3 style="color:var(--gold); margin-bottom:15px;">Table Booking</h3>
-            <form id="resForm">
-                <input type="text" id="resName" placeholder="Reservation Name" required>
-                <input type="datetime-local" id="resTime" required>
-                <input type="number" id="resGuests" placeholder="Number of Guests" min="1" max="20" required>
-                <button type="submit" class="btn-gold">Request Table</button>
-            </form>
-        </div>
-    </div>
+    <div id="menu-grid">Loading items...</div>
 </section>
 
 <section class="section">
-    <h2 class="section-title">Guest Feedback</h2>
-    <div class="form-container">
-        <div class="form-box">
-            <h3 style="color:var(--gold); margin-bottom:15px;">Write a Review</h3>
-            <form id="addReviewForm">
-                <input type="text" id="revName" placeholder="Your Name" required>
-                <select id="revRating" required>
-                    <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
-                    <option value="4">⭐⭐⭐⭐ (Great)</option>
-                    <option value="3">⭐⭐⭐ (Good)</option>
-                </select>
-                <textarea id="revContent" placeholder="Share your experience..." rows="3" required></textarea>
-                <button type="submit" class="btn-gold">Submit Review</button>
-            </form>
-        </div>
+    <div class="form-box">
+        <h3 style="color:var(--gold)">Table Booking</h3>
+        <form id="resForm">
+            <input type="text" id="resName" placeholder="Your Name" required>
+            <input type="number" id="resGuests" placeholder="Guests" required>
+            <button type="submit" class="btn-gold">Book Now</button>
+        </form>
+    </div>
+
+    <div class="form-box">
+        <h3 style="color:var(--gold)">Reviews</h3>
+        <form id="addReviewForm">
+            <input type="text" id="revName" placeholder="Name" required>
+            <textarea id="revContent" placeholder="Message" required></textarea>
+            <button type="submit" class="btn-gold">Submit Review</button>
+        </form>
         <div id="review-display-grid"></div>
     </div>
 </section>
-
-<footer>
-    <p>📞 +91 80826 66242 | 📍 Luxury District, Block 5</p>
-    <p style="opacity:0.3; margin-top:20px;">© 2026 HALF MILLION CAFE</p>
-</footer>
 
 <script>
     const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
@@ -163,35 +70,80 @@
     const _sb = supabase.createClient(S_URL, S_KEY);
     let masterItems = [];
 
-    async function init() {
-        try {
-            // Test 1: Can we even talk to the table?
-            const { data, error } = await _sb.from('menu_item').select('*');
-            
-            if (error) {
-                alert("DATABASE REJECTED US: " + error.message);
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                alert("DATABASE EMPTY: Supabase connected, but it returned 0 rows. Check your table name!");
-                return;
-            }
-
-            // If we got here, data exists!
-            alert("SUCCESS: Found " + data.length + " items in menu_item!");
-            masterItems = data;
+    // Start everything
+    window.onload = async () => {
+        alert("System starting..."); // This MUST pop up now.
+        
+        // 1. Get Menu
+        const { data: menu, error: mErr } = await _sb.from('menu_item').select('*');
+        if (mErr) {
+            alert("Menu Error: " + mErr.message);
+        } else {
+            masterItems = menu;
             renderMenu('coffee');
-            fetchReviews();
+        }
 
-        } catch (err) {
-            alert("CONNECTION CRASH: " + err.message);
+        // 2. Get Reviews
+        fetchReviews();
+    };
+
+    function renderMenu(cat) {
+        const grid = document.getElementById('menu-grid');
+        grid.innerHTML = '';
+        
+        const filtered = masterItems.filter(i => i.category.toLowerCase().includes(cat.toLowerCase()));
+        
+        if (filtered.length === 0) {
+            grid.innerHTML = "<p>No " + cat + " found. Check categories in Supabase!</p>";
+            return;
+        }
+
+        filtered.forEach(item => {
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${item.image_url}" class="card-img">
+                    <h3>${item.name}</h3>
+                    <p class="price">₹${item.price}</p>
+                </div>`;
+        });
+
+        // Update Tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(cat));
+        });
+    }
+
+    async function fetchReviews() {
+        const { data, error } = await _sb.from('reviews').select('*').limit(5);
+        const display = document.getElementById('review-display-grid');
+        if (data) {
+            display.innerHTML = '';
+            data.forEach(r => {
+                display.innerHTML += `<div class="review-card"><strong>${r.name}</strong><p>${r.content}</p></div>`;
+            });
         }
     }
 
-    // Keep the rest of your functions (renderMenu, fetchReviews, etc.) exactly the same
-    init();
+    // Booking Submission
+    document.getElementById('resForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const { error } = await _sb.from('reservation').insert([{
+            name: document.getElementById('resName').value,
+            guests: document.getElementById('resGuests').value
+        }]);
+        alert(error ? "Error: " + error.message : "Booking Successful!");
+    };
+
+    // Review Submission
+    document.getElementById('addReviewForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const { error } = await _sb.from('reviews').insert([{
+            name: document.getElementById('revName').value,
+            content: document.getElementById('revContent').value,
+            rating: 5
+        }]);
+        if (!error) { alert("Review saved!"); fetchReviews(); }
+    };
 </script>
-    
 </body>
 </html>
