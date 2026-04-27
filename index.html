@@ -28,14 +28,14 @@
         .btn-gold { background: var(--gold); color: #000; border: none; width: 100%; padding: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
         .review-card { background: #111; padding: 20px; border-left: 3px solid var(--gold); margin-top: 15px; border-radius: 0 4px 4px 0; }
         .stars { color: var(--gold); margin-bottom: 8px; }
-        .review-date { display: block; font-size: 0.7rem; opacity: 0.5; margin-top: 5px; }
+        .review-date { display: block; font-size: 0.75rem; color: #888; margin-top: 10px; font-weight: 400; }
     </style>
 </head>
 <body>
 
 <nav>
-    <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img" id="client-logo">
-    <span class="logo-text" id="client-name">HALF MILLION</span>
+    <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img">
+    <span class="logo-text">HALF MILLION</span>
 </nav>
 
 <section class="section">
@@ -96,20 +96,12 @@
 </section>
 
 <script>
-    // --- STEP 1: CLIENT CONFIGURATION ---
-    // When you sell this, ONLY change these 4 lines
-    const CONFIG = {
-        S_URL: 'https://bdugxkgfqpshhbfjkvju.supabase.co',
-        S_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE',
-        WHATSAPP: '918082666242',
-        BUSINESS_NAME: 'HALF MILLION'
-    };
-
-    const _sb = supabase.createClient(CONFIG.S_URL, CONFIG.S_KEY);
+    const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
+    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
+    
+    const _sb = supabase.createClient(S_URL, S_KEY);
     let masterItems = [], cart = [];
 
-    // --- STEP 2: SECURITY HELPERS ---
-    // Cleans text to prevent hackers from injecting code
     function sanitize(str) {
         const div = document.createElement('div');
         div.textContent = str;
@@ -117,7 +109,6 @@
     }
 
     window.onload = async () => {
-        document.getElementById('client-name').innerText = CONFIG.BUSINESS_NAME;
         const { data, error } = await _sb.from('menu_item').select('*');
         if(!error) { masterItems = data; renderMenu('coffee'); }
         fetchReviews();
@@ -153,8 +144,8 @@
         const name = sanitize(document.getElementById('custName').value);
         const addr = sanitize(document.getElementById('custAddress').value);
         const pay = document.getElementById('payMethod').value;
-        const msg = `*NEW ORDER FROM ${CONFIG.BUSINESS_NAME}*%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
-        window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${msg}`);
+        const msg = `*NEW ORDER*%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
+        window.open(`https://wa.me/918082666242?text=${msg}`);
     };
 
     document.getElementById('resForm').onsubmit = async (e) => {
@@ -170,19 +161,22 @@
     };
 
     async function fetchReviews() {
-        // Increased limit to 20 for real credibility
+        // FIXED: .order('created_at', {ascending: false}) ensures NEW reviews are at the TOP
         const { data } = await _sb.from('reviews').select('*').order('created_at', {ascending: false}).limit(20);
         const div = document.getElementById('review-display');
         if(data) {
             div.innerHTML = '';
             data.forEach(r => {
-                const date = new Date(r.created_at).toLocaleDateString();
+                // FIXED: Adding the date back under the review content
+                const reviewDate = new Date(r.created_at).toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
                 div.innerHTML += `
                     <div class="review-card">
                         <div class="stars">${"⭐".repeat(r.rating)}</div>
                         <strong>${sanitize(r.name)}</strong>
                         <p>"${sanitize(r.content)}"</p>
-                        <span class="review-date">${date}</span>
+                        <span class="review-date">Review Date: ${reviewDate}</span>
                     </div>`;
             });
         }
@@ -197,7 +191,10 @@
             rating: parseInt(document.getElementById('revStars').value), 
             content: content 
         }]);
-        if(!error) { fetchReviews(); document.getElementById('revForm').reset(); }
+        if(!error) { 
+            fetchReviews(); 
+            document.getElementById('revForm').reset(); 
+        }
     };
 </script>
 </body>
