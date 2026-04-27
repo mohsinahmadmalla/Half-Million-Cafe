@@ -165,7 +165,6 @@
     let masterItems = [];
     let cart = [];
 
-    // SECURITY: Sanitize function to strip dangerous HTML tags
     function sanitize(text) {
         const temp = document.createElement('div');
         temp.textContent = text;
@@ -173,16 +172,27 @@
     }
 
     async function init() {
+        // FETCH MENU WITH ERROR ALERT
         const { data: menu, error } = await _sb.from('menu_item').select('*');
-        if (menu) { masterItems = menu; renderMenu('coffee'); }
-        if (error) console.error("Data fetch blocked by RLS or Network Error");
+        if (error) {
+            alert("DB ERROR (Menu): " + error.message);
+        } else if (menu) { 
+            masterItems = menu; 
+            renderMenu('coffee'); 
+        }
         fetchReviews();
     }
 
     function renderMenu(cat) {
         const grid = document.getElementById('menu-grid');
         grid.innerHTML = '';
-        masterItems.filter(i => i.category === cat).forEach(item => {
+        const items = masterItems.filter(i => i.category.toLowerCase() === cat.toLowerCase());
+        
+        if(items.length === 0) {
+            grid.innerHTML = '<p style="text-align:center; width:100%">No items found in this category.</p>';
+        }
+
+        items.forEach(item => {
             grid.innerHTML += `
                 <div class="card">
                     <img src="${item.image_url}" class="card-img" alt="${item.name}">
@@ -204,41 +214,38 @@
     document.getElementById('orderForm').onsubmit = (e) => {
         e.preventDefault();
         if(cart.length === 0) return alert("Your cart is empty!");
-        
         const method = sanitize(document.getElementById('payMethod').value);
         const name = sanitize(document.getElementById('custName').value);
         const addr = sanitize(document.getElementById('custAddress').value);
-        
         const text = `*NEW ORDER FROM WEBSITE*%0A%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${method}`;
         window.open(`https://wa.me/${PHONE}?text=${text}`);
     };
 
     document.getElementById('resForm').onsubmit = async (e) => {
         e.preventDefault();
-        
         const resData = {
             name: sanitize(document.getElementById('resName').value),
             date_time: document.getElementById('resTime').value,
             guests: parseInt(document.getElementById('resGuests').value)
         };
-
-        // Security check for guest count
-        if(resData.guests < 1 || resData.guests > 20) return alert("Guest count must be between 1 and 20.");
-
         const { error } = await _sb.from('reservation').insert([resData]);
         if (!error) {
             alert("Table reserved successfully!");
             document.getElementById('resForm').reset();
         } else {
-            alert("Action denied. Please contact support.");
+            alert("Booking Failed: " + error.message);
         }
     };
 
     async function fetchReviews() {
-        const { data: reviews } = await _sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(3);
+        const { data: reviews, error } = await _sb.from('reviews').select('*').order('created_at', { ascending: false }).limit(3);
+        if (error) {
+            alert("DB ERROR (Reviews): " + error.message);
+            return;
+        }
         const display = document.getElementById('review-display-grid');
         display.innerHTML = '';
-        if(reviews) {
+        if(reviews && reviews.length > 0) {
             reviews.forEach(r => {
                 display.innerHTML += `
                     <div class="review-card">
@@ -247,6 +254,8 @@
                         <br><strong>- ${sanitize(r.name)}</strong>
                     </div>`;
             });
+        } else {
+            display.innerHTML = '<p>No reviews yet. Be the first!</p>';
         }
     }
 
@@ -263,7 +272,7 @@
             document.getElementById('addReviewForm').reset();
             fetchReviews();
         } else {
-            alert("Submission failed. Database RLS might be blocking this action.");
+            alert("Review Failed: " + error.message);
         }
     };
 
