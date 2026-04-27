@@ -34,8 +34,15 @@
 <body>
 
 <nav>
-    <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img">
-    <span class="logo-text">HALF MILLION</span>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <img src="https://i.ibb.co/m5tTRvZ5/Gemini-Generated-Image-g1ek8og1ek8og1ek.png" class="logo-img">
+        <div>
+            <span class="logo-text">HALF MILLION</span>
+            <div style="font-size:0.7rem; color:var(--gold); opacity:0.8;">
+                📍 123 Cafe Street | 📞 +91 8082666242 | ✉️ info@halfmillion.com
+            </div>
+        </div>
+    </div>
 </nav>
 
 <section class="section">
@@ -191,28 +198,29 @@
         }
   
    }
-  
+   
     document.getElementById('revForm').onsubmit = async (e) => {
         e.preventDefault();
         const name = sanitize(document.getElementById('revName').value);
         const content = sanitize(document.getElementById('revText').value);
         const stars = parseInt(document.getElementById('revStars').value);
 
+        // We add 'created_at: new Date()' to force the current time into the database
         const { error } = await _sb.from('reviews').insert([{ 
             name: name, 
             rating: stars, 
-            content: content 
+            content: content,
+            created_at: new Date().toISOString() 
         }]);
 
         if(!error) { 
-            // This forces the list to refresh immediately so the user sees their new review
             setTimeout(() => { fetchReviews(); }, 500); 
             document.getElementById('revForm').reset(); 
         } else {
-            alert("Error saving review. Please try again.");
+            alert("Error saving review.");
         }
     };
-
+ 
 </script>
 </body>
 </html>
