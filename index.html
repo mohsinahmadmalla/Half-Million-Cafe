@@ -3,151 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Half Million Cafe | Premium Lounge</title>
+    <title>Half Million | The Signature Lounge</title>
+    
+    <link id="favicon" rel="icon" type="image/png" href="">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --gold: #c5a059; --dark: #0a0a0a; --glass: rgba(255, 255, 255, 0.05); }
-        body { background-color: var(--dark); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        header { text-align: center; padding: 60px 20px; background: linear-gradient(to bottom, #1a1a1a, var(--dark)); }
-        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--gold); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; }
-        .tagline { font-weight: 300; letter-spacing: 2px; opacity: 0.7; text-align: center; display: block; }
-        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; margin-top: 20px; }
-        .tab-btn { background: var(--glass); border: 1px solid rgba(197, 160, 89, 0.3); color: white; padding: 10px 25px; border-radius: 50px; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: var(--gold); color: black; font-weight: 600; }
-        #menu-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 200px; }
-        .menu-card { background: var(--glass); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease; }
-        .menu-card:hover { transform: translateY(-5px); border-color: var(--gold); }
-        .menu-img { width: 100%; height: 200px; object-fit: cover; background: #222; }
-        .menu-info { padding: 20px; text-align: center; }
-        .menu-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin: 0; }
-        .menu-price { color: var(--gold); font-weight: 600; font-size: 1.2rem; margin: 10px 0; }
-        .add-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 8px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
-        .add-btn:hover { background: var(--gold); color: black; }
-        .section-title { text-align: center; color: var(--gold); margin-top: 60px; font-family: 'Playfair Display', serif; }
-        form { max-width: 500px; margin: 20px auto; padding: 40px 20px; background: var(--glass); border-radius: 20px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; box-sizing: border-box; }
-        .submit-btn { background: var(--gold); color: black; font-weight: 700; border: none; width: 100%; padding: 15px; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
-        .error-msg { color: #ff6b6b; text-align: center; padding: 20px; }
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #0c0c0c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(20, 20, 20, 0.9);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--dark-bg); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+
+        /* --- Sticky Navigation --- */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        
+        /* This handles your logo image sizing */
+        .logo-img {
+            height: 50px; 
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .logo-img:hover { transform: scale(1.05); }
+
+        .brand-name { 
+            font-family: 'Playfair Display', serif; 
+            color: var(--gold); 
+            font-size: 1.5rem; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* --- Hero --- */
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 8vw, 4.5rem); color: var(--gold); }
+
+        /* --- Menu Grid --- */
+        .section { padding: 100px 20px; max-width: 1200px; margin: 0 auto; }
+        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 50px; }
+        .tab-btn { 
+            background: transparent; border: 1px solid var(--gold); color: var(--gold);
+            padding: 12px 35px; cursor: pointer; transition: 0.4s; font-weight: 600;
+        }
+        .tab-btn.active { background: var(--gold); color: #000; }
+
+        #menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); transition: 0.4s; position: relative; }
+        .card:hover { border-color: var(--gold); transform: translateY(-10px); }
+        .card-img { width: 100%; height: 280px; object-fit: cover; opacity: 0.8; transition: 0.5s; }
+        .card:hover .card-img { opacity: 1; }
+        .card-content { padding: 25px; text-align: center; }
+        .price { color: var(--gold); font-size: 1.3rem; margin: 10px 0; font-weight: 600; }
+        
+        .btn-order { 
+            background: none; border: 1px solid var(--gold); color: var(--gold); 
+            width: 100%; padding: 12px; cursor: pointer; font-weight: 700; transition: 0.3s;
+        }
+        .btn-order:hover { background: var(--gold); color: #000; }
+
+        /* --- Reviews --- */
+        .reviews { background: #080808; padding: 80px 20px; text-align: center; }
+        .review-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
+        .review-card { background: #111; padding: 40px; width: 350px; border-top: 3px solid var(--gold); }
+
+        footer { background: #050505; padding: 60px 20px; text-align: center; border-top: 1px solid #222; }
+
+        @media (max-width: 768px) { nav { padding: 15px 20px; } .brand-name { font-size: 1.1rem; } }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Half Million</h1>
-    <span class="tagline">PREMIUM COFFEE EXPERIENCE</span>
-</header>
+<nav>
+    <a href="#" class="logo-container">
+        <img src="" id="nav-logo" class="logo-img" alt="Logo">
+        <span class="brand-name">Half Million</span>
+    </a>
+    <div style="color: var(--gold); font-weight: 600;">LUXURY CAFE</div>
+</nav>
 
-<div class="tabs">
-    <button class="tab-btn active" onclick="filterMenu('coffee')">Coffee</button>
-    <button class="tab-btn" onclick="filterMenu('food')">Fine Food</button>
-</div>
+<section class="hero">
+    <h1>Experience the Signature</h1>
+    <p style="letter-spacing: 5px; margin-top: 10px;">CRAFTED WITH PRECISION</p>
+</section>
 
-<div id="menu-container">Loading your experience...</div>
+<section class="section">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="filterMenu('coffee', event)">Coffee</button>
+        <button class="tab-btn" onclick="filterMenu('food', event)">Fine Food</button>
+    </div>
+    <div id="menu-grid">Discovering flavors...</div>
+</section>
 
-<h2 class="section-title">Delivery Order</h2>
-<form id="orderForm">
-    <input type="text" id="custName" placeholder="Your Name" required>
-    <input type="text" id="custAddress" placeholder="Delivery Address" required>
-    <select id="paymentMethod">
-        <option value="Cash on Delivery">Cash on Delivery</option>
-        <option value="Online Payment">Online Payment</option>
-    </select>
-    <button type="submit" class="submit-btn">Place Order via WhatsApp</button>
-</form>
+<section class="reviews">
+    <h2 style="font-family: 'Playfair Display'; font-size: 2.5rem; color: var(--gold);">Guest Feedback</h2>
+    <div class="review-grid">
+        <div class="review-card">
+            <p>"The aesthetic of the lounge is matched only by the quality of the beans."</p>
+            <br><strong>- Khalid A.</strong>
+        </div>
+        <div class="review-card">
+            <p>"Seamless ordering and a truly premium experience. 5 stars."</p>
+            <br><strong>- Maria S.</strong>
+        </div>
+    </div>
+</section>
 
-<h2 class="section-title">Table Reservation</h2>
-<form id="resForm">
-    <input type="text" id="resName" placeholder="Full Name" required>
-    <input type="datetime-local" id="resTime" required>
-    <input type="number" id="resGuests" placeholder="Number of Guests" required>
-    <button type="submit" class="submit-btn">Confirm Reservation</button>
-</form>
+<footer>
+    <p style="color: var(--gold); font-family: 'Playfair Display'; font-size: 1.5rem;">Half Million</p>
+    <p style="opacity: 0.5; margin-top: 10px;">Open Daily: 8:00 AM - 12:00 AM</p>
+</footer>
 
 <script>
+    // --- CONFIGURATION ---
+    const LOGO_URL = 'https://g.co/gemini/share/afd43fbb4c6c'; // <--- PUT YOUR LOGO LINK HERE
     const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
-    const CAFE_PHONE = '918082666242';
+    const PHONE = '918082666242';
 
-    // Fixed the naming conflict here
+    // --- INITIALIZE ---
+    document.getElementById('nav-logo').src = LOGO_URL;
+    document.getElementById('favicon').href = LOGO_URL;
+    
     const _supabase = supabase.createClient(S_URL, S_KEY);
-    let cart = [];
-    let allItems = [];
+    let masterMenu = [];
 
     async function fetchMenu() {
         try {
             const { data, error } = await _supabase.from('menu_item').select('*');
             if (error) throw error;
-            
-            allItems = data;
-            renderMenu(data, 'coffee');
+            masterMenu = data;
+            renderItems('coffee');
         } catch (err) {
-            console.error(err);
-            document.getElementById('menu-container').innerHTML = 
-                `<div class="error-msg">Error connecting to database: ${err.message}</div>`;
+            document.getElementById('menu-grid').innerHTML = `<p>Error: ${err.message}</p>`;
         }
     }
 
-    function renderMenu(items, category) {
-        const container = document.getElementById('menu-container');
-        container.innerHTML = '';
-        
-        const filtered = items.filter(i => i.category === category);
-        
-        if (filtered.length === 0) {
-            container.innerHTML = '<p style="text-align:center; width:100%">No items found in this category.</p>';
-            return;
-        }
+    function renderItems(category) {
+        const grid = document.getElementById('menu-grid');
+        grid.innerHTML = '';
+        const filtered = masterMenu.filter(i => i.category === category);
 
         filtered.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'menu-card';
-            const img = item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500';
-            
-            card.innerHTML = `
-                <img src="${img}" class="menu-img" onerror="this.src='https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500'">
-                <div class="menu-info">
-                    <p class="menu-name">${item.name}</p>
-                    <p class="menu-price">₹${item.price}</p>
-                    <button class="add-btn" onclick="addToCart('${item.name}')">+ Add to Order</button>
+            const img = item.image_url || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600';
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${img}" class="card-img" alt="${item.name}">
+                    <div class="card-content">
+                        <h3 style="font-family: 'Playfair Display'">${item.name}</h3>
+                        <p class="price">₹${item.price}</p>
+                        <button class="btn-order" onclick="sendOrder('${item.name}')">PLACE ORDER</button>
+                    </div>
                 </div>
             `;
-            container.appendChild(card);
         });
     }
 
-    function addToCart(name) {
-        cart.push(name);
-        alert(name + " added to your order!");
+    function filterMenu(cat, e) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderItems(cat);
     }
 
-    document.getElementById('orderForm').onsubmit = (e) => {
-        e.preventDefault();
-        if(cart.length === 0) return alert("Please add at least one item to your order first!");
-        const name = document.getElementById('custName').value;
-        const addr = document.getElementById('custAddress').value;
-        const msg = `Order for ${name}:\nItems: ${cart.join(', ')}\nAddress: ${addr}`;
-        window.open(`https://wa.me/${CAFE_PHONE}?text=${encodeURIComponent(msg)}`);
-    };
-
-    document.getElementById('resForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const { error } = await _supabase.from('reservation').insert([{
-            name: document.getElementById('resName').value,
-            date_time: document.getElementById('resTime').value,
-            guests: document.getElementById('resGuests').value
-        }]);
-        if (error) alert("Reservation Error: " + error.message);
-        else alert("Your table reservation has been confirmed!");
-    };
-
-    function filterMenu(cat) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        renderMenu(allItems, cat);
+    function sendOrder(name) {
+        const text = encodeURIComponent(`Hello Half Million! I would like to order: ${name}.`);
+        window.open(`https://wa.me/${PHONE}?text=${text}`);
     }
 
     fetchMenu();
 </script>
+
 </body>
 </html>
