@@ -161,41 +161,58 @@
     };
 
     async function fetchReviews() {
-        // FIXED: .order('created_at', {ascending: false}) ensures NEW reviews are at the TOP
-        const { data } = await _sb.from('reviews').select('*').order('created_at', {ascending: false}).limit(20);
+        // 'ascending: false' puts the NEWEST 2026 reviews at the top
+        const { data, error } = await _sb
+            .from('reviews')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(20);
+
         const div = document.getElementById('review-display');
-        if(data) {
+        if (data) {
             div.innerHTML = '';
             data.forEach(r => {
-                // FIXED: Adding the date back under the review content
-                const reviewDate = new Date(r.created_at).toLocaleDateString('en-GB', {
+                // This fix ensures the date is NOT 1970
+                const rawDate = r.created_at ? new Date(r.created_at) : new Date();
+                const reviewDate = rawDate.toLocaleDateString('en-GB', {
                     day: 'numeric', month: 'short', year: 'numeric'
                 });
+
                 div.innerHTML += `
                     <div class="review-card">
                         <div class="stars">${"⭐".repeat(r.rating)}</div>
                         <strong>${sanitize(r.name)}</strong>
                         <p>"${sanitize(r.content)}"</p>
-                        <span class="review-date">Review Date: ${reviewDate}</span>
+                        <span class="review-date" style="display:block; font-size:0.75rem; color:#888; margin-top:10px;">
+                            Review Date: ${reviewDate}
+                        </span>
                     </div>`;
             });
         }
-    }
-
+  
+   }
+  
     document.getElementById('revForm').onsubmit = async (e) => {
         e.preventDefault();
         const name = sanitize(document.getElementById('revName').value);
         const content = sanitize(document.getElementById('revText').value);
+        const stars = parseInt(document.getElementById('revStars').value);
+
         const { error } = await _sb.from('reviews').insert([{ 
             name: name, 
-            rating: parseInt(document.getElementById('revStars').value), 
+            rating: stars, 
             content: content 
         }]);
+
         if(!error) { 
-            fetchReviews(); 
+            // This forces the list to refresh immediately so the user sees their new review
+            setTimeout(() => { fetchReviews(); }, 500); 
             document.getElementById('revForm').reset(); 
+        } else {
+            alert("Error saving review. Please try again.");
         }
     };
+
 </script>
 </body>
 </html>
