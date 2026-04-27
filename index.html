@@ -28,8 +28,7 @@
         .btn-gold { background: var(--gold); color: #000; border: none; width: 100%; padding: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
         .review-card { background: #111; padding: 20px; border-left: 3px solid var(--gold); margin-top: 15px; border-radius: 0 4px 4px 0; }
         .stars { color: var(--gold); margin-bottom: 8px; }
-        .footer-info { text-align: center; padding: 40px 5%; border-top: 1px solid rgba(197, 160, 89, 0.1); margin-top: 40px; }
-        .footer-info p { margin-bottom: 10px; opacity: 0.8; font-size: 0.9rem; }
+        .review-date { display: block; font-size: 0.75rem; color: #888; margin-top: 10px; font-weight: 400; }
     </style>
 </head>
 <body>
@@ -45,7 +44,7 @@
         <button class="tab-btn active" id="btn-coffee" onclick="filterMenu('coffee')">Coffee</button>
         <button class="tab-btn" id="btn-food" onclick="filterMenu('fine food')">Fine Food</button>
     </div>
-    <div id="menu-grid">Loading...</div>
+    <div id="menu-grid">Loading Selection...</div>
 </section>
 
 <section class="section">
@@ -84,9 +83,9 @@
             <form id="revForm">
                 <input type="text" id="revName" placeholder="Your Name" required>
                 <select id="revStars" required>
-                    <option value="5">⭐⭐⭐⭐⭐</option>
-                    <option value="4">⭐⭐⭐⭐</option>
-                    <option value="3">⭐⭐⭐</option>
+                    <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+                    <option value="4">⭐⭐⭐⭐ (Great)</option>
+                    <option value="3">⭐⭐⭐ (Good)</option>
                 </select>
                 <textarea id="revText" placeholder="How was your experience?" rows="3" required></textarea>
                 <button type="submit" class="btn-gold">Submit Review</button>
@@ -96,18 +95,18 @@
     </div>
 </section>
 
-<div class="footer-info">
-    <p>📍 Shop No. 12, Gold Luxury Plaza, Mumbai, India</p>
-    <p>📞 +91 8082666242 | ✉️ support@halfmillion.com</p>
-    <p style="color: var(--gold); margin-top: 20px;">© 2026 Half Million Lounge. All rights reserved.</p>
-</div>
-
 <script>
     const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
     
     const _sb = supabase.createClient(S_URL, S_KEY);
     let masterItems = [], cart = [];
+
+    function sanitize(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
 
     window.onload = async () => {
         const { data, error } = await _sb.from('menu_item').select('*');
@@ -126,7 +125,7 @@
                 <div class="card">
                     <img src="${item.image_url}" class="card-img">
                     <div style="padding:15px">
-                        <h3>${item.name}</h3>
+                        <h3>${sanitize(item.name)}</h3>
                         <p class="price">₹${item.price}</p>
                         <button class="btn-gold" style="padding:8px" onclick="addToCart('${item.name}')">Add to Order</button>
                     </div>
@@ -141,32 +140,43 @@
 
     document.getElementById('orderForm').onsubmit = (e) => {
         e.preventDefault();
-        const msg = `*NEW ORDER*%0A*Name:* ${document.getElementById('custName').value}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${document.getElementById('custAddress').value}`;
+        if(!cart.length) return alert("Please add items to cart!");
+        const name = sanitize(document.getElementById('custName').value);
+        const addr = sanitize(document.getElementById('custAddress').value);
+        const pay = document.getElementById('payMethod').value;
+        const msg = `*NEW ORDER*%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
         window.open(`https://wa.me/918082666242?text=${msg}`);
     };
 
     document.getElementById('resForm').onsubmit = async (e) => {
         e.preventDefault();
+        const name = sanitize(document.getElementById('resName').value);
         const { error } = await _sb.from('reservation').insert([{ 
-            name: document.getElementById('resName').value, 
+            name: name, 
             date_time: document.getElementById('resTime').value, 
             guests: document.getElementById('resGuests').value 
         }]);
-        alert(error ? "Error" : "Success!");
+        alert(error ? "Error submitting" : "Reservation Sent Successfully!");
+        if(!error) e.target.reset();
     };
 
-    // FIXED: Now Newest reviews are at the top (ascending: false)
     async function fetchReviews() {
+        // FIXED: .order('created_at', {ascending: false}) ensures NEW reviews are at the TOP
         const { data } = await _sb.from('reviews').select('*').order('created_at', {ascending: false}).limit(20);
         const div = document.getElementById('review-display');
         if(data) {
             div.innerHTML = '';
             data.forEach(r => {
+                // FIXED: Adding the date back under the review content
+                const reviewDate = new Date(r.created_at).toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
                 div.innerHTML += `
                     <div class="review-card">
                         <div class="stars">${"⭐".repeat(r.rating)}</div>
-                        <strong>${r.name}</strong>
-                        <p>"${r.content}"</p>
+                        <strong>${sanitize(r.name)}</strong>
+                        <p>"${sanitize(r.content)}"</p>
+                        <span class="review-date">Review Date: ${reviewDate}</span>
                     </div>`;
             });
         }
@@ -174,12 +184,17 @@
 
     document.getElementById('revForm').onsubmit = async (e) => {
         e.preventDefault();
+        const name = sanitize(document.getElementById('revName').value);
+        const content = sanitize(document.getElementById('revText').value);
         const { error } = await _sb.from('reviews').insert([{ 
-            name: document.getElementById('revName').value, 
+            name: name, 
             rating: parseInt(document.getElementById('revStars').value), 
-            content: document.getElementById('revText').value 
+            content: content 
         }]);
-        if(!error) { fetchReviews(); document.getElementById('revForm').reset(); }
+        if(!error) { 
+            fetchReviews(); 
+            document.getElementById('revForm').reset(); 
+        }
     };
 </script>
 </body>
