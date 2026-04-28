@@ -172,15 +172,7 @@
     function filterMenu(cat) { renderMenu(cat); }
     function addToCart(n) { cart.push(n); document.getElementById('cartCount').innerText = cart.length; }
 
-    document.getElementById('orderForm').onsubmit = (e) => {
-        e.preventDefault();
-        if(!cart.length) return alert("Please add items to cart!");
-        const name = document.getElementById('custName').value;
-        const addr = document.getElementById('custAddress').value;
-        const pay = document.getElementById('payMethod').value;
-        const msg = `*NEW ORDER*%0A*Name:* ${name}%0A*Items:* ${cart.join(', ')}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
-        window.open(`https://wa.me/918082666242?text=${msg}`);
-    };
+
 
     document.getElementById('resForm').onsubmit = async (e) => {
         e.preventDefault();
@@ -191,6 +183,31 @@
         }]);
         alert(error ? "Error submitting" : "Reservation Sent Successfully!");
     };
+
+    document.getElementById('orderForm').onsubmit = async (e) => {
+    e.preventDefault();
+    if(!cart.length) return alert("Please add items to cart!");
+
+    const name = document.getElementById('custName').value;
+    const addr = document.getElementById('custAddress').value;
+    const pay = document.getElementById('payMethod').value;
+    const orderItems = cart.join(', ');
+
+    // 1. SAVE TO DATABASE (Staff will see this)
+    const { data, error } = await _sb.from('orders').insert([{ 
+        customer_name: name, 
+        items: orderItems, 
+        address: addr, 
+        payment_method: pay,
+        status: 'Pending Payment'
+    }]);
+
+    if (error) console.error("Database Error:", error);
+
+    // 2. OPEN WHATSAPP (Owner will see this)
+    const msg = `*NEW ORDER*%0A*Name:* ${name}%0A*Items:* ${orderItems}%0A*Address:* ${addr}%0A*Payment:* ${pay}`;
+    window.open(`https://wa.me/918082666242?text=${msg}`);
+};
 
     async function fetchReviews() {
         const { data } = await _sb.from('reviews').select('*');
