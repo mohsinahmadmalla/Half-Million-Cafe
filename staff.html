@@ -33,12 +33,6 @@
     <div id="order-list">Loading Live Orders...</div>
 
 <script>
-    const password = prompt("Enter Staff Passcode:");
-if (password !== "1234") { 
-    alert("Access Denied");
-    window.location.href = "index.html"; 
-}
-
  // USE THE SAME KEYS FROM YOUR MAIN CODE
     const S_URL = 'https://bdugxkgfqpshhbfjkvju.supabase.co';
     const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkdWd4a2dmcXBzaGhiZmprdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTYxNTcsImV4cCI6MjA5Mjc5MjE1N30.wUkI2sjPr5F0m2rNFfu2qqU4pwZZ1mPBUgAiGNquMOE';
@@ -71,6 +65,12 @@ if (password !== "1234") {
     // Refresh the kitchen screen every 10 seconds automatically
     setInterval(fetchOrders, 10000);
     window.onload = fetchOrders;
+    const password = prompt("Enter Staff Passcode:");
+if (password !== "1234") { 
+    alert("Access Denied");
+    window.location.href = "index.html"; 
+}
+
 </script>
 </body>
 </html>
