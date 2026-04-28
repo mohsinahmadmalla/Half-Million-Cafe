@@ -39,30 +39,38 @@
     const _sb = supabase.createClient(S_URL, S_KEY);
 
     async function fetchOrders() {
-        const { data, error } = await _sb
-            .from('orders')
-            .select('*')
-            .neq('status', 'Completed') // Don't show finished orders
-            .order('created_at', { ascending: false });
+        try {
+            const { data, error } = await _sb
+                .from('orders')
+                .select('*'); // Get everything first to test
 
-        if(!error) {
+            if (error) throw error;
+
             const list = document.getElementById('order-list');
+            if (!data || data.length === 0) {
+                list.innerHTML = "No active orders found.";
+                return;
+            }
+
             list.innerHTML = data.map(order => `
                 <div class="order-card">
                     <div class="order-info">
-                        <h3>${order.customer_name}</h3>
+                        <h3>${order.customer_name || 'Guest'}</h3>
                         <p class="items"><strong>Items:</strong> ${order.items}</p>
-                        <p style="font-size:0.8rem; margin-top:5px;">Type: ${order.payment_method}</p>
+                        <p style="font-size:0.8rem;">Pay: ${order.payment_method}</p>
                     </div>
-                    <div class="status-badge ${order.status.toLowerCase().replace(' ', '-')}">
-                        ${order.status}
+                    <div class="status-badge">
+                        ${order.status || 'New'}
                     </div>
                 </div>
             `).join('');
+        } catch (err) {
+            document.getElementById('order-list').innerHTML = "Error: " + err.message;
         }
     }
 
-    // Refresh the kitchen screen every 10 seconds automatically
+
+  // Refresh the kitchen screen every 10 seconds automatically
     setInterval(fetchOrders, 10000);
     window.onload = fetchOrders;
 </script>
